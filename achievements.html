@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements - CA Study Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .dark body {
+            background-color: #111827;
+        }
+        .header-gradient {
+            background: linear-gradient(-45deg, #4f46e5, #ec4899, #22d3ee, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .progress-circle {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(#7c3aed calc(var(--progress, 0) * 1%), #e5e7eb 0);
+            transition: background 0.5s;
+        }
+        .progress-circle::before {
+            content: "";
+            position: absolute;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
+        .dark .progress-circle::before {
+             background-color: #1f2937;
+        }
+        .progress-value {
+            position: relative;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #7c3aed;
+        }
+        .achievement-card {
+            transition: all 0.3s ease;
+        }
+        .achievement-card.locked {
+            filter: grayscale(1);
+            opacity: 0.6;
+        }
+        .achievement-card.unlocked {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="dark:bg-gray-900">
+
+    <!-- Main Container -->
+    <div class="w-full min-h-screen">
+        <!-- Header Section -->
+        <header class="header-gradient p-8 rounded-b-3xl shadow-lg">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div id="header-title-container">
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight flex items-center">
+                        <span id="student-name">CA Add Name</span>
+                        <button id="edit-name-btn" class="ml-3 text-white/80 hover:text-white text-lg"><i class="fas fa-pencil-alt"></i></button>
+                    </h1>
+                    <p class="text-lg font-semibold text-white/80">ROAD TO BECOME CA</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                     <div class="progress-circle" style="--progress: 0;" title="Overall Progress">
+                         <span class="progress-value">0%</span>
+                    </div>
+                    <button id="theme-toggle" class="text-white text-2xl"><i class="fas fa-moon"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content Area -->
+        <div class="max-w-7xl mx-auto p-4 md:p-8">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">My Achievements</h2>
+                    <a href="index.html" class="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Home
+                    </a>
+                </div>
+                
+                <div id="achievements-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Achievements will be dynamically generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const studentNameEl = document.getElementById('student-name');
+            const editNameBtn = document.getElementById('edit-name-btn');
+
+            // --- Name Logic ---
+            const loadName = () => {
+                const savedName = localStorage.getItem('caStudentName');
+                studentNameEl.textContent = savedName || 'CA Add Name';
+            };
+            
+            editNameBtn.addEventListener('click', () => {
+                const currentName = (studentNameEl.textContent.startsWith('CA ') ? studentNameEl.textContent.substring(3) : studentNameEl.textContent).replace('Add Name', '').trim();
+                const newName = prompt('Enter your name:', currentName);
+                if (newName && newName.trim() !== '') {
+                    localStorage.setItem('caStudentName', 'CA ' + newName.trim());
+                    loadName();
+                } else if (newName === '') { // If user enters an empty string, reset to default
+                    localStorage.removeItem('caStudentName');
+                    loadName();
+                }
+            });
+
+            // --- Dark Mode Toggle Logic ---
+            const themeToggle = document.getElementById('theme-toggle');
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            themeToggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+                themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+
+            // --- Achievements Data and Logic ---
+            const chapterData = {
+                p1: [ { id: 'p1-c1' }, { id: 'p1-c2' }, { id: 'p1-c3' }, { id: 'p1-c4' }, { id: 'p1-c5' }, { id: 'p1-c6' }, { id: 'p1-c7' }, { id: 'p1-c8' }, { id: 'p1-c9' }, { id: 'p1-c10' }, { id: 'p1-c11' }, { id: 'p1-c12' }, { id: 'p1-c13' }, { id: 'p1-c14' }, { id: 'p1-c15' }, { id: 'p1-c16' } ],
+                p2: [ { id: 'p2-c1' }, { id: 'p2-c2' }, { id: 'p2-c3' }, { id: 'p2-c4' }, { id: 'p2-c5' }, { id: 'p2-c6' }, { id: 'p2-c7' }, { id: 'p2-c8' }, { id: 'p2-c9' }, { id: 'p2-c10' }, { id: 'p2-c11' }, { id: 'p2-c12' }, { id: 'p2-c13' }, { id: 'p2-c14' }, { id: 'p2-c15' } ],
+                p3: [ { id: 'p3-c1' }, { id: 'p3-c2' }, { id: 'p3-c3' }, { id: 'p3-c4' }, { id: 'p3-c5' }, { id: 'p3-c6' }, { id: 'p3-c7' }, { id: 'p3-c8' }, { id: 'p3-c9' }, { id: 'p3-c10' } ],
+                p4: [ { id: 'p4-c1' }, { id: 'p4-c2' }, { id: 'p4-c3' }, { id: 'p4-c4' }, { id: 'p4-c5' }, { id: 'p4-c6' }, { id: 'p4-c7' }, { id: 'p4-c8' } ],
+                p5: [ { id: 'p5-c1' }, { id: 'p5-c2' }, { id: 'p5-c3' }, { id: 'p5-c4' }, { id: 'p5-c5' } ],
+                p6: [ { id: 'p6-c1' }, { id: 'p6-c2' }, { id: 'p6-c3' }, { id: 'p6-c4' }, { id: 'p6-c5' } ]
+            };
+            
+            const allPapersData = {
+                p1: { name: "Paper 1: Financial Reporting", chapters: [ { id: 'p1-c1', name: 'Conceptual Framework', weight: 3.125 }, { id: 'p1-c2', name: 'Ind AS 1, 34, 7 (Presentation)', weight: 3.125 }, { id: 'p1-c3', name: 'Ind AS 8, 10, 113 (Measurement)', weight: 3.125 }, { id: 'p1-c4', name: 'Schedule III of Companies Act', weight: 3.125 }, { id: 'p1-c5', name: 'Ind AS 115: Revenue', weight: 7 }, { id: 'p1-c6', name: 'Ind AS 2, 16, 23, 36, 38, 40, 105 (Assets)', weight: 7 }, { id: 'p1-c7', name: 'Ind AS 116: Leases', weight: 7 }, { id: 'p1-c8', name: 'Ind AS 19: Employee Benefits', weight: 7 }, { id: 'p1-c9', name: 'Ind AS 37: Provisions, Contingent Liabilities/Assets', weight: 7 }, { id: 'p1-c10', name: 'Ind AS 12, 21 (Taxes & Forex)', weight: 6.67 }, { id: 'p1-c11', name: 'Ind AS 24, 33, 108 (Disclosures)', weight: 6.67 }, { id: 'p1-c12', name: 'Ind AS 20, 102, 41 (Other)', weight: 6.67 }, { id: 'p1-c13', name: 'Financial Instruments (Ind AS 32, 109, 107)', weight: 7.5 }, { id: 'p1-c14', name: 'Business Combinations (Ind AS 103)', weight: 7.5 }, { id: 'p1-c15', name: 'Consolidation (Ind AS 110, 111, 27, 28, 112)', weight: 7.5 }, { id: 'p1-c16', name: 'First-time Adoption (Ind AS 101) & Analysis of FS', weight: 7.5 } ] },
+                p2: { name: "Paper 2: Advanced Financial Management", chapters: [ { id: 'p2-c1', name: 'Financial Policy and Corporate Strategy', weight: 5 }, { id: 'p2-c2', name: 'Risk Management', weight: 5 }, { id: 'p2-c3', name: 'Advanced Capital Budgeting Decisions', weight: 5 }, { id: 'p2-c4', name: 'Security Analysis', weight: 13.33 }, { id: 'p2-c5', name: 'Security Valuation', weight: 13.33 }, { id: 'p2-c6', name: 'Portfolio Management', weight: 13.34 }, { id: 'p2-c7', name: 'Securitization', weight: 6.25 }, { id: 'p2-c8', name: 'Mutual Funds', weight: 6.25 }, { id: 'p2-c9', name: 'Derivatives Analysis and Valuation', weight: 6.25 }, { id: 'p2-c10', name: 'Foreign Exchange Exposure and Risk Management', weight: 6.25 }, { id: 'p2-c11', name: 'International Financial Management', weight: 4 }, { id: 'p2-c12', name: 'Interest Rate Risk Management', weight: 4 }, { id: 'p2-c13', name: 'Business Valuation', weight: 4 }, { id: 'p2-c14', name: 'Mergers, Acquisitions and Corporate Restructuring', weight: 4 }, { id: 'p2-c15', name: 'Startup Finance', weight: 4 } ] },
+                p3: { name: "Paper 3: Advanced Auditing, Assurance and Professional Ethics", chapters: [ { id: 'p3-c1', name: 'Quality Control (SQC 1, SA 220)', weight: 10 }, { id: 'p3-c2', name: 'General Auditing Principles & Responsibilities', weight: 10 }, { id: 'p3-c3', name: 'Audit Planning, Strategy, and Execution', weight: 10 }, { id: 'p3-c4', name: 'Materiality, Risk Assessment and Internal Control', weight: 10 }, { id: 'p3-c5', name: 'Audit Evidence', weight: 10 }, { id: 'p3-c6', name: 'Audit of Group Entities', weight: 6.25 }, { id: 'p3-c7', name: 'Specialised Areas (Banks, Insurance, PSUs)', weight: 6.25 }, { id: 'p3-c8', name: 'Digital Auditing and Assurance', weight: 6.25 }, { id: 'p3-c9', name: 'Audit-related and Assurance Services', weight: 6.25 }, { id: 'p3-c10', name: 'Professional Ethics and Liabilities of Auditors', weight: 25 } ] },
+                p4: { name: "Paper 4: Direct Tax Laws & International Taxation", chapters: [ { id: 'p4-c1', name: 'Taxation of Entities & Business Reorganisation', weight: 57.5 }, { id: 'p4-c3', name: 'Tax Administration and Appellate Mechanism', weight: 12.5 }, { id: 'p4-c5', name: 'Transfer Pricing & DTAA', weight: 15 }, { id: 'p4-c7', name: 'Model Tax Conventions & BEPS', weight: 15 } ] },
+                p5: { name: "Paper 5: Indirect Tax Laws", chapters: [ { id: 'p5-c1', name: 'Goods and Services Tax (GST)', weight: 75 }, { id: 'p5-c2', name: 'Customs & Foreign Trade Policy (FTP)', weight: 25 } ] },
+                p6: { name: "Paper 6: Integrated Business Solutions", chapters: [ { id: 'p6-c1', name: 'Case Studies: Financial Reporting', weight: 20 }, { id: 'p6-c2', name: 'Case Studies: AFM', weight: 20 }, { id: 'p6-c3', name: 'Case Studies: Auditing', weight: 20 }, { id: 'p6-c4', name: 'Case Studies: Tax Laws', weight: 20 }, { id: 'p6-c5', name: 'Case Studies: Corp Law & SCM', weight: 20 } ] }
+            };
+
+            const achievements = [
+                { id: 'fr_master', title: 'FR Master', description: 'Complete all chapters of Financial Reporting.', icon: 'fa-book', color: 'indigo', check: () => checkSubjectCompletion('p1') },
+                { id: 'afm_master', title: 'AFM Master', description: 'Complete all chapters of Advanced Financial Management.', icon: 'fa-chart-line', color: 'sky', check: () => checkSubjectCompletion('p2') },
+                { id: 'audit_master', title: 'Audit Master', description: 'Complete all chapters of Advanced Auditing.', icon: 'fa-gavel', color: 'emerald', check: () => checkSubjectCompletion('p3') },
+                { id: 'dt_master', title: 'Direct Tax Master', description: 'Complete all chapters of Direct Tax Laws.', icon: 'fa-landmark', color: 'rose', check: () => checkSubjectCompletion('p4') },
+                { id: 'idt_master', title: 'Indirect Tax Master', description: 'Complete all chapters of Indirect Tax Laws.', icon: 'fa-receipt', color: 'amber', check: () => checkSubjectCompletion('p5') },
+                { id: 'ibs_master', title: 'IBS Master', description: 'Complete all case studies of Integrated Business Solutions.', icon: 'fa-puzzle-piece', color: 'fuchsia', check: () => checkSubjectCompletion('p6') },
+                { id: 'group1_guru', title: 'Group 1 Guru', description: 'Complete all subjects in Group 1.', icon: 'fa-layer-group', color: 'blue', check: () => checkGroupCompletion(['p1', 'p2', 'p3']) },
+                { id: 'group2_guru', title: 'Group 2 Guru', description: 'Complete all subjects in Group 2.', icon: 'fa-layer-group', color: 'red', check: () => checkGroupCompletion(['p4', 'p5', 'p6']) },
+                { id: 'syllabus_slayer', title: 'Syllabus Slayer', description: 'Complete all chapters of all subjects.', icon: 'fa-dragon', color: 'slate', check: () => checkGroupCompletion(['p1', 'p2', 'p3', 'p4', 'p5', 'p6']) },
+            ];
+
+            const checkSubjectCompletion = (paperId) => {
+                return chapterData[paperId].every(chapter => localStorage.getItem(chapter.id) === 'Completed');
+            };
+            
+            const checkGroupCompletion = (paperIds) => {
+                return paperIds.every(paperId => checkSubjectCompletion(paperId));
+            };
+
+            const achievementsGrid = document.getElementById('achievements-grid');
+            achievements.forEach(ach => {
+                const isUnlocked = ach.check();
+                const card = document.createElement('div');
+                card.className = `achievement-card p-6 rounded-lg text-center ${isUnlocked ? 'unlocked bg-white dark:bg-gray-800 shadow-lg' : 'locked bg-gray-200 dark:bg-gray-700'}`;
+                
+                const iconColor = isUnlocked ? `text-${ach.color}-500` : 'text-gray-400';
+
+                card.innerHTML = `
+                    <i class="fas ${ach.icon} ${iconColor} text-5xl mb-4"></i>
+                    <h3 class="font-bold text-xl text-gray-800 dark:text-white">${ach.title}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">${ach.description}</p>
+                `;
+                achievementsGrid.appendChild(card);
+            });
+            
+            // --- Overall Progress Bar Logic ---
+             const calculateAndUpdateOverallProgress = () => {
+                let totalCompletedWeight = 0;
+                const totalPapers = Object.keys(allPapersData).length;
+
+                 for (const paperId in allPapersData) {
+                    const paperChapters = allPapersData[paperId].chapters;
+                    let paperCompletedWeight = 0;
+                    paperChapters.forEach(chapter => {
+                        if (localStorage.getItem(chapter.id) === 'Completed') {
+                            paperCompletedWeight += chapter.weight;
+                        }
+                    });
+                    totalCompletedWeight += paperCompletedWeight;
+                }
+                
+                const overallPercentage = Math.round(totalCompletedWeight / totalPapers);
+                
+                const progressCircle = document.querySelector('.progress-circle');
+                const progressValue = document.querySelector('.progress-value');
+                
+                progressCircle.style.setProperty('--progress', overallPercentage);
+                progressValue.textContent = `${overallPercentage}%`;
+            };
+
+            // Initial Load
+            loadName();
+            calculateAndUpdateOverallProgress();
+            window.addEventListener('storage', calculateAndUpdateOverallProgress);
+        });
+    </script>
+
+</body>
+</html>

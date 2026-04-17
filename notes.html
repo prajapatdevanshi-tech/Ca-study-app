@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Notes - CA Study Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .dark body {
+            background-color: #111827;
+        }
+        .header-gradient {
+            background: linear-gradient(-45deg, #4f46e5, #ec4899, #22d3ee, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .progress-circle {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(#7c3aed calc(var(--progress, 0) * 1%), #e5e7eb 0);
+            transition: background 0.5s;
+        }
+        .progress-circle::before {
+            content: "";
+            position: absolute;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
+        .dark .progress-circle::before {
+             background-color: #1f2937;
+        }
+        .progress-value {
+            position: relative;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #7c3aed;
+        }
+        .subject-card.has-data {
+            border-left: 4px solid #16a34a; /* Green border for notes */
+        }
+        .dark .subject-card.has-data {
+            border-left: 4px solid #4ade80;
+        }
+        /* Custom scrollbar for modal content */
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #a7a7a7;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #555; }
+        .file-input-label {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .file-input-label:hover {
+            background-color: #2563eb;
+        }
+        .ldr-flag {
+            cursor: pointer;
+            color: #d1d5db; /* gray-300 */
+        }
+        .ldr-flag.flagged {
+            color: #facc15; /* yellow-400 */
+        }
+    </style>
+</head>
+<body class="dark:bg-gray-900">
+
+    <!-- Main Container -->
+    <div class="w-full min-h-screen">
+        <!-- Header Section -->
+        <header class="header-gradient p-8 rounded-b-3xl shadow-lg">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div id="header-title-container">
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight flex items-center">
+                        <span id="student-name">CA Add Name</span>
+                        <button id="edit-name-btn" class="ml-3 text-white/80 hover:text-white text-lg"><i class="fas fa-pencil-alt"></i></button>
+                    </h1>
+                    <p class="text-lg font-semibold text-white/80">ROAD TO BECOME CA</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                     <div class="progress-circle" style="--progress: 0;" title="Overall Progress">
+                         <span class="progress-value">0%</span>
+                    </div>
+                    <button id="theme-toggle" class="text-white text-2xl"><i class="fas fa-moon"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content Area -->
+        <div class="max-w-7xl mx-auto p-4 md:p-8">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">My Notes</h2>
+                    <a href="index.html" class="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Home
+                    </a>
+                </div>
+                
+                <!-- CA Final Section -->
+                <div class="mb-10">
+                    <h3 class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 border-b-2 border-indigo-200 dark:border-indigo-800 pb-2">CA Final</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div data-subject="Financial Reporting" data-sm-link="https://www.icai.org/post/final-nset" class="subject-card bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"><h4 class="font-bold text-gray-900 dark:text-white">Financial Reporting</h4><p class="text-sm text-gray-500 dark:text-gray-400">Group 1</p></div>
+                        <div data-subject="Advanced Financial Management" data-sm-link="https://www.icai.org/post/final-nset" class="subject-card bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"><h4 class="font-bold text-gray-900 dark:text-white">Advanced Financial Management</h4><p class="text-sm text-gray-500 dark:text-gray-400">Group 1</p></div>
+                        <div data-subject="Advanced Auditing, Assurance and Professional Ethics" data-sm-link="https://www.icai.org/post/final-nset" class="subject-card bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"><h4 class="font-bold text-gray-900 dark:text-white">Advanced Auditing, Assurance and Professional Ethics</h4><p class="text-sm text-gray-500 dark:text-gray-400">Group 1</p></div>
+                        <div data-subject="Direct Tax Laws & International Taxation" data-sm-link="https://www.icai.org/post/final-nset" class="subject-card bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"><h4 class="font-bold text-gray-900 dark:text-white">Direct Tax Laws & International Taxation</h4><p class="text-sm text-gray-500 dark:text-gray-400">Group 2</p></div>
+                        <div data-subject="Indirect Tax Laws" data-sm-link="https://www.icai.org/post/final-nset" class="subject-card bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"><h4 class="font-bold text-gray-900 dark:text-white">Indirect Tax Laws</h4><p class="text-sm text-gray-500 dark:text-gray-400">Group 2</p></div>
+                        <div data-subject="Integrated Business Solutions" data-sm-link="https://www.icai.org/post/final-nset" class="subject-card bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"><h4 class="font-bold text-gray-900 dark:text-white">Integrated Business Solutions</h4><p class="text-sm text-gray-500 dark:text-gray-400">Group 2</p></div>
+                    </div>
+                </div>
+
+                <!-- SPOM Section -->
+                <div class="mb-10">
+                    <h3 class="text-2xl font-bold text-green-600 dark:text-green-400 mb-4 border-b-2 border-green-200 dark:border-green-800 pb-2">Self-Paced Online Modules (SPOM)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div data-subject="Corporate and Economic Laws" data-sm-link="https://www.icai.org/post/self-paced-online-modules-nset" class="subject-card bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"><h4 class="font-bold text-gray-900 dark:text-white">Corporate and Economic Laws</h4><p class="text-sm text-gray-500 dark:text-gray-400">Set A</p></div>
+                        <div data-subject="Strategic Cost & Performance Management" data-sm-link="https://www.icai.org/post/self-paced-online-modules-nset" class="subject-card bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"><h4 class="font-bold text-gray-900 dark:text-white">Strategic Cost & Performance Management</h4><p class="text-sm text-gray-500 dark:text-gray-400">Set B</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Choosing Action -->
+    <div id="action-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-8 transform transition-transform duration-300 scale-95 text-center">
+            <h3 id="action-modal-title" class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Subject</h3>
+            <div class="space-y-3">
+                <p class="font-semibold text-gray-700 dark:text-gray-300">ICAI Materials</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <a id="icai-sm-link" href="#" target="_blank" class="w-full text-center bg-blue-500 text-white font-bold py-2 px-3 rounded-lg hover:bg-blue-600 transition-colors text-sm">Study Mat</a>
+                    <a id="icai-rtp-link" href="https://boslive.icai.org/education_content_rtp.php?c=Final" target="_blank" class="w-full text-center bg-blue-500 text-white font-bold py-2 px-3 rounded-lg hover:bg-blue-600 transition-colors text-sm">RTPs</a>
+                    <a id="icai-mtp-link" href="#" target="_blank" class="w-full text-center bg-blue-500 text-white font-bold py-2 px-3 rounded-lg hover:bg-blue-600 transition-colors text-sm">MTPs</a>
+                </div>
+            </div>
+            <hr class="my-6 border-gray-200 dark:border-gray-700">
+            <button id="personalised-mat-btn" class="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                <i class="fas fa-user-edit mr-2"></i>Personalised Material
+            </button>
+            <button id="close-action-modal" class="mt-6 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white text-sm">&times; Close</button>
+        </div>
+    </div>
+
+    <!-- Modal for Personalised Material -->
+    <div id="notes-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-3xl p-6 md:p-8 transform transition-transform duration-300 scale-95 flex flex-col max-h-[90vh]">
+            <div class="flex-shrink-0">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="notes-modal-title" class="text-2xl font-bold text-gray-800 dark:text-white">Subject Notes</h3>
+                    <button id="close-notes-modal" class="text-gray-400 hover:text-gray-800 dark:hover:text-white text-3xl leading-none">&times;</button>
+                </div>
+                <div class="flex items-end space-x-2 border-b dark:border-gray-700 pb-4 mb-4">
+                    <div class="flex-grow">
+                        <label for="new-teacher-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Add New Teacher/Source</label>
+                        <input type="text" id="new-teacher-name" placeholder="Enter teacher or source name" class="mt-1 block w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-2">
+                    </div>
+                    <button id="add-teacher-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-sm font-semibold flex-shrink-0">Add Source</button>
+                </div>
+            </div>
+            <div id="teachers-container" class="flex-grow overflow-y-auto custom-scrollbar pr-2 -mr-2"></div>
+            <div class="mt-6 flex-shrink-0 flex justify-end">
+                <button id="done-btn" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 font-bold">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const studentNameEl = document.getElementById('student-name');
+        const editNameBtn = document.getElementById('edit-name-btn');
+
+        // --- Name Logic ---
+        const loadName = () => {
+            const savedName = localStorage.getItem('caStudentName');
+            studentNameEl.textContent = savedName || 'CA Add Name';
+        };
+        
+        editNameBtn.addEventListener('click', () => {
+            const currentName = (studentNameEl.textContent.startsWith('CA ') ? studentNameEl.textContent.substring(3) : studentNameEl.textContent).replace('Add Name', '').trim();
+            const newName = prompt('Enter your name:', currentName);
+            if (newName && newName.trim() !== '') {
+                localStorage.setItem('caStudentName', 'CA ' + newName.trim());
+                loadName();
+            } else if (newName === '') { // If user enters an empty string, reset to default
+                localStorage.removeItem('caStudentName');
+                loadName();
+            }
+        });
+
+        // --- Dark Mode Toggle Logic ---
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+
+        // --- Modal and Data Management Logic ---
+        const subjectCards = document.querySelectorAll('.subject-card');
+        const actionModal = document.getElementById('action-modal');
+        const actionModalTitle = document.getElementById('action-modal-title');
+        const closeActionModalBtn = document.getElementById('close-action-modal');
+        const icaiSmLink = document.getElementById('icai-sm-link');
+        const icaiMtpLink = document.getElementById('icai-mtp-link');
+        const personalisedMatBtn = document.getElementById('personalised-mat-btn');
+        
+        const notesModal = document.getElementById('notes-modal');
+        const notesModalTitle = document.getElementById('notes-modal-title');
+        const closeNotesModalBtn = document.getElementById('close-notes-modal');
+        const doneBtn = document.getElementById('done-btn');
+        const newTeacherNameInput = document.getElementById('new-teacher-name');
+        const addTeacherBtn = document.getElementById('add-teacher-btn');
+        const teachersContainer = document.getElementById('teachers-container');
+
+        let currentSubject = null;
+        let notesData = JSON.parse(localStorage.getItem('caNotesData')) || {};
+
+        const saveData = () => {
+            localStorage.setItem('caNotesData', JSON.stringify(notesData));
+            updateCardIndicators();
+        };
+
+        const updateCardIndicators = () => {
+            subjectCards.forEach(card => {
+                const subject = card.dataset.subject;
+                if (notesData[subject] && Object.keys(notesData[subject]).length > 0) {
+                    card.classList.add('has-data');
+                } else {
+                    card.classList.remove('has-data');
+                }
+            });
+        };
+        
+        const renderTeachers = () => {
+            teachersContainer.innerHTML = '';
+            const subjectTeachers = notesData[currentSubject] || {};
+
+            if (Object.keys(subjectTeachers).length === 0) {
+                teachersContainer.innerHTML = '<p class="text-sm text-gray-400 text-center py-4">No sources added yet.</p>';
+                return;
+            }
+
+            for (const teacherName in subjectTeachers) {
+                const files = subjectTeachers[teacherName];
+                const teacherId = `teacher-${currentSubject}-${teacherName}`.replace(/[^a-zA-Z0-9]/g, '');
+                
+                let filesHTML = '';
+                files.forEach((file, index) => {
+                    const starClass = file.flagged ? 'fas fa-star ldr-flag flagged' : 'far fa-star ldr-flag';
+                    filesHTML += `
+                        <div class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-2 rounded-md mt-2">
+                            <i class="${starClass}" data-index="${index}" title="Flag for Last Day Revision"></i>
+                            <span class="truncate text-sm flex-grow mx-3"><i class="fas ${file.type.startsWith('image') ? 'fa-file-image' : 'fa-file-pdf'} mr-2"></i>${file.desc || file.name}</span>
+                            <button data-index="${index}" class="delete-file-btn text-red-500 hover:text-red-700 text-lg">&times;</button>
+                        </div>
+                    `;
+                });
+
+                const teacherSection = document.createElement('div');
+                teacherSection.className = 'teacher-section bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg mb-4';
+                teacherSection.dataset.teacher = teacherName;
+                teacherSection.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-lg text-gray-900 dark:text-white">${teacherName}</h4>
+                        <button class="delete-teacher-btn text-red-500 hover:text-red-700 text-xl">&times;</button>
+                    </div>
+                    <div class="files-list mt-2">${filesHTML || '<p class="text-sm text-gray-400 text-center py-2">No files uploaded.</p>'}</div>
+                    <div class="flex items-end space-x-2 mt-3">
+                         <div class="flex-grow">
+                             <label for="file-desc-${teacherId}" class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">File Description</label>
+                             <input type="text" id="file-desc-${teacherId}" placeholder="e.g., Chapter 1 Notes" class="file-desc-input block w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md shadow-sm sm:text-sm p-2 text-xs">
+                        </div>
+                        <div class="flex-shrink-0">
+                             <label for="${teacherId}-file-input" class="file-input-label mt-5 inline-block">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </label>
+                            <input type="file" id="${teacherId}-file-input" class="hidden file-input" accept=".pdf,.jpeg,.jpg">
+                        </div>
+                    </div>
+                `;
+                teachersContainer.appendChild(teacherSection);
+            }
+        };
+
+        // Open Action Modal
+        subjectCards.forEach(card => {
+            card.addEventListener('click', () => {
+                currentSubject = card.dataset.subject;
+                actionModalTitle.textContent = currentSubject;
+                icaiSmLink.href = card.dataset.smLink;
+                
+                const groupText = card.querySelector('p')?.textContent || '';
+                if (groupText.includes('Group 1')) {
+                    icaiMtpLink.href = 'https://resource.cdn.icai.org/84556bos68130-final-gp1.pdf';
+                } else if (groupText.includes('Group 2')) {
+                    icaiMtpLink.href = 'https://resource.cdn.icai.org/84557bos68130-final-gp2.pdf';
+                } else {
+                    icaiMtpLink.href = 'https://www.icai.org/post.html?post_id=14946';
+                }
+
+                actionModal.classList.remove('hidden');
+                actionModal.classList.add('flex');
+                setTimeout(() => actionModal.querySelector('div').classList.remove('scale-95'), 10);
+            });
+        });
+
+        const closeActionModal = () => {
+            actionModal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => actionModal.classList.add('hidden'), 300);
+        };
+        
+        closeActionModalBtn.addEventListener('click', closeActionModal);
+        
+        personalisedMatBtn.addEventListener('click', () => {
+            closeActionModal();
+            notesModalTitle.textContent = `${currentSubject} - Personalised Notes`;
+            renderTeachers();
+            notesModal.classList.remove('hidden');
+            notesModal.classList.add('flex');
+            setTimeout(() => notesModal.querySelector('div').classList.remove('scale-95'), 10);
+        });
+
+        const closeNotesModal = () => {
+            notesModal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => notesModal.classList.add('hidden'), 300);
+        };
+
+        closeNotesModalBtn.addEventListener('click', closeNotesModal);
+        doneBtn.addEventListener('click', closeNotesModal);
+
+        addTeacherBtn.addEventListener('click', () => {
+            const teacherName = newTeacherNameInput.value.trim();
+            if (teacherName) {
+                if (!notesData[currentSubject]) notesData[currentSubject] = {};
+                if (!notesData[currentSubject][teacherName]) {
+                    notesData[currentSubject][teacherName] = [];
+                    newTeacherNameInput.value = '';
+                    renderTeachers();
+                    saveData();
+                } else {
+                    alert('Source with this name already exists.');
+                }
+            }
+        });
+
+        teachersContainer.addEventListener('click', (e) => {
+            const target = e.target;
+            const teacherSection = target.closest('.teacher-section');
+            if (!teacherSection) return;
+            const teacherName = teacherSection.dataset.teacher;
+
+            if (target.classList.contains('delete-teacher-btn')) {
+                if (confirm(`Delete source "${teacherName}" and all their notes?`)) {
+                    delete notesData[currentSubject][teacherName];
+                    renderTeachers();
+                    saveData();
+                }
+            }
+            
+            if (target.classList.contains('delete-file-btn')) {
+                const fileIndex = parseInt(target.dataset.index, 10);
+                notesData[currentSubject][teacherName].splice(fileIndex, 1);
+                renderTeachers();
+                saveData();
+            }
+
+            if (target.classList.contains('ldr-flag')) {
+                const fileIndex = parseInt(target.dataset.index, 10);
+                const file = notesData[currentSubject][teacherName][fileIndex];
+                file.flagged = !file.flagged;
+                saveData();
+                renderTeachers();
+            }
+        });
+
+        teachersContainer.addEventListener('change', (e) => {
+            if (e.target.classList.contains('file-input')) {
+                const file = e.target.files[0];
+                if (file) {
+                    const teacherSection = e.target.closest('.teacher-section');
+                    const teacherName = teacherSection.dataset.teacher;
+                    const descInput = teacherSection.querySelector('.file-desc-input');
+                    const fileDesc = descInput.value.trim();
+                    
+                    notesData[currentSubject][teacherName].push({
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        desc: fileDesc,
+                        flagged: false
+                    });
+                    
+                    descInput.value = ''; // Clear description input
+                    renderTeachers();
+                    saveData();
+                }
+            }
+        });
+
+        updateCardIndicators();
+        
+        // --- Overall Progress Bar Logic ---
+        const chapterData = {
+            p1: [ { id: 'p1-c1', weight: 3.125 }, { id: 'p1-c2', weight: 3.125 }, { id: 'p1-c3', weight: 3.125 }, { id: 'p1-c4', weight: 3.125 }, { id: 'p1-c5', weight: 7 }, { id: 'p1-c6', weight: 7 }, { id: 'p1-c7', weight: 7 }, { id: 'p1-c8', weight: 7 }, { id: 'p1-c9', weight: 7 }, { id: 'p1-c10', weight: 6.67 }, { id: 'p1-c11', weight: 6.67 }, { id: 'p1-c12', weight: 6.67 }, { id: 'p1-c13', weight: 7.5 }, { id: 'p1-c14', weight: 7.5 }, { id: 'p1-c15', weight: 7.5 }, { id: 'p1-c16', weight: 7.5 } ],
+            p2: [ { id: 'p2-c1', weight: 5 }, { id: 'p2-c2', weight: 5 }, { id: 'p2-c3', weight: 5 }, { id: 'p2-c4', weight: 13.33 }, { id: 'p2-c5', weight: 13.33 }, { id: 'p2-c6', weight: 13.34 }, { id: 'p2-c7', weight: 6.25 }, { id: 'p2-c8', weight: 6.25 }, { id: 'p2-c9', weight: 6.25 }, { id: 'p2-c10', weight: 6.25 }, { id: 'p2-c11', weight: 4 }, { id: 'p2-c12', weight: 4 }, { id: 'p2-c13', weight: 4 }, { id: 'p2-c14', weight: 4 }, { id: 'p2-c15', weight: 4 } ],
+            p3: [ { id: 'p3-c1', weight: 10 }, { id: 'p3-c2', weight: 10 }, { id: 'p3-c3', weight: 10 }, { id: 'p3-c4', weight: 10 }, { id: 'p3-c5', weight: 10 }, { id: 'p3-c6', weight: 6.25 }, { id: 'p3-c7', weight: 6.25 }, { id: 'p3-c8', weight: 6.25 }, { id: 'p3-c9', weight: 6.25 }, { id: 'p3-c10', weight: 25 } ],
+            p4: [ { id: 'p4-c1', weight: 27.5 }, { id: 'p4-c2', weight: 27.5 }, { id: 'p4-c3', weight: 7.5 }, { id: 'p4-c4', weight: 7.5 }, { id: 'p4-c5', weight: 7.5 }, { id: 'p4-c6', weight: 7.5 }, { id: 'p4-c7', weight: 7.5 }, { id: 'p4-c8', weight: 7.5 } ],
+            p5: [ { id: 'p5-c1', weight: 25 }, { id: 'p5-c2', weight: 25 }, { id: 'p5-c3', weight: 25 }, { id: 'p5-c4', weight: 12.5 }, { id: 'p5-c5', weight: 12.5 } ],
+            p6: [ { id: 'p6-c1', weight: 20 }, { id: 'p6-c2', weight: 20 }, { id: 'p6-c3', weight: 20 }, { id: 'p6-c4', weight: 20 }, { id: 'p6-c5', weight: 20 } ]
+        };
+
+        const calculateAndUpdateOverallProgress = () => {
+            let totalCompletedWeight = 0;
+            const totalPapers = Object.keys(chapterData).length;
+
+            for (const paperId in chapterData) {
+                const paperChapters = chapterData[paperId];
+                let paperCompletedWeight = 0;
+                paperChapters.forEach(chapter => {
+                    if (localStorage.getItem(chapter.id) === 'Completed') {
+                        paperCompletedWeight += chapter.weight;
+                    }
+                });
+                totalCompletedWeight += paperCompletedWeight;
+            }
+
+            const overallPercentage = Math.round(totalCompletedWeight / totalPapers);
+            
+            const progressCircle = document.querySelector('.progress-circle');
+            const progressValue = document.querySelector('.progress-value');
+            
+            progressCircle.style.setProperty('--progress', overallPercentage);
+            progressValue.textContent = `${overallPercentage}%`;
+        };
+        
+        // Initial Load
+        loadName();
+        calculateAndUpdateOverallProgress();
+        window.addEventListener('storage', calculateAndUpdateOverallProgress);
+    });
+    </script>
+</body>
+</html>

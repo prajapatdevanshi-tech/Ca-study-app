@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Target Sheet - CA Study Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .dark body {
+            background-color: #111827;
+        }
+        .header-gradient {
+            background: linear-gradient(-45deg, #4f46e5, #ec4899, #22d3ee, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .progress-circle {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(#7c3aed calc(var(--progress, 0) * 1%), #e5e7eb 0);
+            transition: background 0.5s;
+        }
+        .progress-circle::before {
+            content: "";
+            position: absolute;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
+        .dark .progress-circle::before {
+             background-color: #1f2937;
+        }
+        .progress-value {
+            position: relative;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #7c3aed;
+        }
+        /* Styles for status dropdowns */
+        .status-select {
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            background-color: #f9fafb;
+            font-size: 0.875rem;
+        }
+        .dark .status-select {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #e5e7eb;
+        }
+        .status-not-started { background-color: #f3f4f6; }
+        .dark .status-not-started { background-color: #374151; }
+        .status-in-progress { background-color: #fef9c3; } /* yellow-100 */
+        .dark .status-in-progress { background-color: #4f46e5; } /* indigo-600 */
+        .status-completed { background-color: #dcfce7; } /* green-100 */
+        .dark .status-completed { background-color: #166534; } /* green-800 */
+    </style>
+</head>
+<body class="dark:bg-gray-900">
+
+    <!-- Main Container -->
+    <div class="w-full min-h-screen">
+        <!-- Header Section -->
+        <header class="header-gradient p-8 rounded-b-3xl shadow-lg">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div id="header-title-container">
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight flex items-center">
+                        <span id="student-name">CA Add Name</span>
+                        <button id="edit-name-btn" class="ml-3 text-white/80 hover:text-white text-lg"><i class="fas fa-pencil-alt"></i></button>
+                    </h1>
+                    <p class="text-lg font-semibold text-white/80">ROAD TO BECOME CA</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                     <div class="progress-circle" style="--progress: 0;" title="Overall Progress">
+                         <span class="progress-value">0%</span>
+                    </div>
+                    <button id="theme-toggle" class="text-white text-2xl"><i class="fas fa-moon"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content Area -->
+        <div class="max-w-7xl mx-auto p-4 md:p-8">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Target Sheet</h2>
+                    <a href="index.html" class="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Home
+                    </a>
+                </div>
+                
+                <div class="space-y-6" id="papers-container">
+                    <!-- All Papers will be generated here by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const studentNameEl = document.getElementById('student-name');
+        const editNameBtn = document.getElementById('edit-name-btn');
+
+        // --- Name Logic ---
+        const loadName = () => {
+            const savedName = localStorage.getItem('caStudentName');
+            studentNameEl.textContent = savedName || 'CA Add Name';
+        };
+        
+        editNameBtn.addEventListener('click', () => {
+            const currentName = (studentNameEl.textContent.startsWith('CA ') ? studentNameEl.textContent.substring(3) : studentNameEl.textContent).replace('Add Name', '').trim();
+            const newName = prompt('Enter your name:', currentName);
+            if (newName && newName.trim() !== '') {
+                localStorage.setItem('caStudentName', 'CA ' + newName.trim());
+                loadName();
+            } else if (newName === '') { // If user enters an empty string, reset to default
+                localStorage.removeItem('caStudentName');
+                loadName();
+            }
+        });
+        
+        // --- Dark Mode Toggle Logic ---
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+
+        // --- Target Sheet Data and Logic ---
+        const allPapersData = {
+            p1: { name: "Paper 1: Financial Reporting", chapters: [ { id: 'p1-c1', name: 'Conceptual Framework', weight: 3.125 }, { id: 'p1-c2', name: 'Ind AS 1, 34, 7 (Presentation)', weight: 3.125 }, { id: 'p1-c3', name: 'Ind AS 8, 10, 113 (Measurement)', weight: 3.125 }, { id: 'p1-c4', name: 'Schedule III of Companies Act', weight: 3.125 }, { id: 'p1-c5', name: 'Ind AS 115: Revenue', weight: 7 }, { id: 'p1-c6', name: 'Ind AS 2, 16, 23, 36, 38, 40, 105 (Assets)', weight: 7 }, { id: 'p1-c7', name: 'Ind AS 116: Leases', weight: 7 }, { id: 'p1-c8', name: 'Ind AS 19: Employee Benefits', weight: 7 }, { id: 'p1-c9', name: 'Ind AS 37: Provisions, Contingent Liabilities/Assets', weight: 7 }, { id: 'p1-c10', name: 'Ind AS 12, 21 (Taxes & Forex)', weight: 6.67 }, { id: 'p1-c11', name: 'Ind AS 24, 33, 108 (Disclosures)', weight: 6.67 }, { id: 'p1-c12', name: 'Ind AS 20, 102, 41 (Other)', weight: 6.67 }, { id: 'p1-c13', name: 'Financial Instruments (Ind AS 32, 109, 107)', weight: 7.5 }, { id: 'p1-c14', name: 'Business Combinations (Ind AS 103)', weight: 7.5 }, { id: 'p1-c15', name: 'Consolidation (Ind AS 110, 111, 27, 28, 112)', weight: 7.5 }, { id: 'p1-c16', name: 'First-time Adoption (Ind AS 101) & Analysis of FS', weight: 7.5 } ] },
+            p2: { name: "Paper 2: Advanced Financial Management", chapters: [ { id: 'p2-c1', name: 'Financial Policy and Corporate Strategy', weight: 5 }, { id: 'p2-c2', name: 'Risk Management', weight: 5 }, { id: 'p2-c3', name: 'Advanced Capital Budgeting Decisions', weight: 5 }, { id: 'p2-c4', name: 'Security Analysis', weight: 13.33 }, { id: 'p2-c5', name: 'Security Valuation', weight: 13.33 }, { id: 'p2-c6', name: 'Portfolio Management', weight: 13.34 }, { id: 'p2-c7', name: 'Securitization', weight: 6.25 }, { id: 'p2-c8', name: 'Mutual Funds', weight: 6.25 }, { id: 'p2-c9', name: 'Derivatives Analysis and Valuation', weight: 6.25 }, { id: 'p2-c10', name: 'Foreign Exchange Exposure and Risk Management', weight: 6.25 }, { id: 'p2-c11', name: 'International Financial Management', weight: 4 }, { id: 'p2-c12', name: 'Interest Rate Risk Management', weight: 4 }, { id: 'p2-c13', name: 'Business Valuation', weight: 4 }, { id: 'p2-c14', name: 'Mergers, Acquisitions and Corporate Restructuring', weight: 4 }, { id: 'p2-c15', name: 'Startup Finance', weight: 4 } ] },
+            p3: { name: "Paper 3: Advanced Auditing, Assurance and Professional Ethics", chapters: [ { id: 'p3-c1', name: 'Quality Control (SQC 1, SA 220)', weight: 10 }, { id: 'p3-c2', name: 'General Auditing Principles & Responsibilities', weight: 10 }, { id: 'p3-c3', name: 'Audit Planning, Strategy, and Execution', weight: 10 }, { id: 'p3-c4', name: 'Materiality, Risk Assessment and Internal Control', weight: 10 }, { id: 'p3-c5', name: 'Audit Evidence', weight: 10 }, { id: 'p3-c6', name: 'Audit of Group Entities', weight: 6.25 }, { id: 'p3-c7', name: 'Specialised Areas (Banks, Insurance, PSUs)', weight: 6.25 }, { id: 'p3-c8', name: 'Digital Auditing and Assurance', weight: 6.25 }, { id: 'p3-c9', name: 'Audit-related and Assurance Services', weight: 6.25 }, { id: 'p3-c10', name: 'Professional Ethics and Liabilities of Auditors', weight: 25 } ] },
+            p4: { name: "Paper 4: Direct Tax Laws & International Taxation", chapters: [ { id: 'p4-c1', name: 'Taxation of Entities & Business Reorganisation', weight: 57.5 }, { id: 'p4-c3', name: 'Tax Administration and Appellate Mechanism', weight: 12.5 }, { id: 'p4-c5', name: 'Transfer Pricing & DTAA', weight: 15 }, { id: 'p4-c7', name: 'Model Tax Conventions & BEPS', weight: 15 } ] },
+            p5: { name: "Paper 5: Indirect Tax Laws", chapters: [ { id: 'p5-c1', name: 'Goods and Services Tax (GST)', weight: 75 }, { id: 'p5-c2', name: 'Customs & Foreign Trade Policy (FTP)', weight: 25 } ] },
+            p6: { name: "Paper 6: Integrated Business Solutions", chapters: [ { id: 'p6-c1', name: 'Case Studies: Financial Reporting', weight: 20 }, { id: 'p6-c2', name: 'Case Studies: AFM', weight: 20 }, { id: 'p6-c3', name: 'Case Studies: Auditing', weight: 20 }, { id: 'p6-c4', name: 'Case Studies: Tax Laws', weight: 20 }, { id: 'p6-c5', name: 'Case Studies: Corp Law & SCM', weight: 20 } ] }
+        };
+
+        let revisionData = JSON.parse(localStorage.getItem('caRevisionData')) || {};
+        const papersContainer = document.getElementById('papers-container');
+
+        // Dynamically create HTML for each paper
+        for (const paperId in allPapersData) {
+            const paper = allPapersData[paperId];
+            let tableRowsHTML = '';
+            paper.chapters.forEach(chapter => {
+                tableRowsHTML += `
+                    <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+                        <td class="px-6 py-4">${chapter.name}</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex items-center justify-center space-x-2">
+                                <button class="rev-btn-minus text-red-500 font-bold">-</button>
+                                <span class="revision-count font-semibold">0</span>
+                                <button class="rev-btn-plus text-green-500 font-bold">+</button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <select class="status-select" data-id="${chapter.id}">
+                                <option>Not Started</option>
+                                <option>In Progress</option>
+                                <option>Completed</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            const paperHTML = `
+                <details class="group bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg" data-paper="${paperId}">
+                    <summary class="font-bold text-lg text-indigo-700 dark:text-indigo-400 cursor-pointer">${paper.name}</summary>
+                    <div class="mt-4 space-y-2">
+                        <div class="w-full bg-gray-200 rounded-full dark:bg-gray-600">
+                            <div id="progress-bar-${paperId}" class="bg-indigo-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%">0%</div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">Chapter</th>
+                                        <th scope="col" class="px-6 py-3 text-center">Revisions</th>
+                                        <th scope="col" class="px-6 py-3 text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${tableRowsHTML}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+            `;
+            papersContainer.innerHTML += paperHTML;
+        }
+
+
+        const statusSelects = document.querySelectorAll('.status-select');
+
+        const updateSelectBackground = (selectElement) => {
+            selectElement.classList.remove('status-not-started', 'status-in-progress', 'status-completed');
+            if (selectElement.value === 'Not Started') selectElement.classList.add('status-not-started');
+            else if (selectElement.value === 'In Progress') selectElement.classList.add('status-in-progress');
+            else if (selectElement.value === 'Completed') selectElement.classList.add('status-completed');
+        };
+        
+        const calculateAndUpdateProgress = (paperId) => {
+            const paperChapters = allPapersData[paperId].chapters;
+            if (!paperChapters) return;
+
+            let completedWeight = 0;
+            paperChapters.forEach(chapter => {
+                const status = localStorage.getItem(chapter.id);
+                if (status === 'Completed') {
+                    completedWeight += chapter.weight;
+                }
+            });
+
+            const progressBar = document.getElementById(`progress-bar-${paperId}`);
+            if (progressBar) {
+                const percentage = Math.round(completedWeight);
+                progressBar.style.width = `${percentage}%`;
+                progressBar.textContent = `${percentage}%`;
+            }
+        };
+
+        const calculateAndUpdateOverallProgress = () => {
+            let totalCompletedWeight = 0;
+            const totalPapers = Object.keys(allPapersData).length;
+
+            for (const paperId in allPapersData) {
+                const paperChapters = allPapersData[paperId].chapters;
+                let paperCompletedWeight = 0;
+                paperChapters.forEach(chapter => {
+                    if (localStorage.getItem(chapter.id) === 'Completed') {
+                        paperCompletedWeight += chapter.weight;
+                    }
+                });
+                totalCompletedWeight += paperCompletedWeight;
+            }
+
+            const overallPercentage = Math.round(totalCompletedWeight / totalPapers);
+            
+            const progressCircle = document.querySelector('.progress-circle');
+            const progressValue = document.querySelector('.progress-value');
+            
+            progressCircle.style.setProperty('--progress', overallPercentage);
+            progressValue.textContent = `${overallPercentage}%`;
+        };
+        
+        const updateRevisionCount = (chapterId, count) => {
+            const row = document.querySelector(`[data-id="${chapterId}"]`).closest('tr');
+            if(row) row.querySelector('.revision-count').textContent = count;
+        };
+
+        const saveRevisionData = () => {
+            localStorage.setItem('caRevisionData', JSON.stringify(revisionData));
+        };
+
+        // Load saved data
+        statusSelects.forEach(select => {
+            const savedStatus = localStorage.getItem(select.dataset.id);
+            if (savedStatus) select.value = savedStatus;
+            updateSelectBackground(select);
+
+            const chapterId = select.dataset.id;
+            const savedRevisions = revisionData[chapterId] || 0;
+            updateRevisionCount(chapterId, savedRevisions);
+        });
+        
+        document.querySelectorAll('details[data-paper]').forEach(paperDetail => {
+            calculateAndUpdateProgress(paperDetail.dataset.paper);
+        });
+        calculateAndUpdateOverallProgress(); // Initial calculation for header progress
+
+        // Event Listeners
+        papersContainer.addEventListener('change', (e) => {
+            if (e.target.classList.contains('status-select')) {
+                localStorage.setItem(e.target.dataset.id, e.target.value);
+                updateSelectBackground(e.target);
+                const paperId = e.target.dataset.id.split('-')[0];
+                calculateAndUpdateProgress(paperId);
+                calculateAndUpdateOverallProgress(); // Update header progress
+            }
+        });
+
+        papersContainer.addEventListener('click', (e) => {
+            const target = e.target;
+            const row = target.closest('tr');
+            if (!row) return;
+            const chapterId = row.querySelector('.status-select').dataset.id;
+
+            if (target.classList.contains('rev-btn-plus')) {
+                revisionData[chapterId] = (revisionData[chapterId] || 0) + 1;
+                saveRevisionData();
+                updateRevisionCount(chapterId, revisionData[chapterId]);
+            }
+            if (target.classList.contains('rev-btn-minus')) {
+                if (revisionData[chapterId] > 0) {
+                    revisionData[chapterId] -= 1;
+                    saveRevisionData();
+                    updateRevisionCount(chapterId, revisionData[chapterId]);
+                }
+            }
+        });
+        
+        // Initial Load
+        loadName();
+        window.addEventListener('storage', calculateAndUpdateOverallProgress);
+    });
+    </script>
+</body>
+</html>

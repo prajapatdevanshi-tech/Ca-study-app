@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planner - CA Study Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .dark body {
+            background-color: #111827;
+        }
+        .header-gradient {
+            background: linear-gradient(-45deg, #4f46e5, #ec4899, #22d3ee, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .progress-circle {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(#7c3aed calc(var(--progress, 0) * 1%), #e5e7eb 0);
+            transition: background 0.5s;
+        }
+        .progress-circle::before {
+            content: "";
+            position: absolute;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
+        .dark .progress-circle::before {
+             background-color: #1f2937;
+        }
+        .progress-value {
+            position: relative;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #7c3aed;
+        }
+        /* Calendar Styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        .calendar-day {
+            aspect-ratio: 1/1;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .calendar-day.today {
+            background-color: #4f46e5;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+        .calendar-day.selected {
+            background-color: #ec4899;
+            color: white;
+            border-radius: 50%;
+        }
+        .calendar-day.other-month {
+            color: #9ca3af;
+        }
+        .dark .calendar-day.other-month {
+            color: #4b5563;
+        }
+        .task-dot {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        .dot-pending { background-color: #3b82f6; } /* blue-500 */
+        .dot-complete { background-color: #22c55e; } /* green-500 */
+        .task-item input:checked + label span {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="dark:bg-gray-900">
+
+    <!-- Main Container -->
+    <div class="w-full min-h-screen">
+        <!-- Header Section -->
+        <header class="header-gradient p-8 rounded-b-3xl shadow-lg">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div id="header-title-container">
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight flex items-center">
+                        <span id="student-name">CA Add Name</span>
+                        <button id="edit-name-btn" class="ml-3 text-white/80 hover:text-white text-lg"><i class="fas fa-pencil-alt"></i></button>
+                    </h1>
+                    <p class="text-lg font-semibold text-white/80">ROAD TO BECOME CA</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                     <div class="progress-circle" style="--progress: 0;" title="Overall Progress">
+                         <span class="progress-value">0%</span>
+                    </div>
+                    <button id="theme-toggle" class="text-white text-2xl"><i class="fas fa-moon"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content Area -->
+        <div class="max-w-7xl mx-auto p-4 md:p-8">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Daily & Monthly Planner</h2>
+                    <a href="index.html" class="inline-flex items-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Home
+                    </a>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Calendar Section -->
+                    <div class="max-w-md mx-auto w-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <button id="prev-month-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-chevron-left"></i></button>
+                            <h3 id="current-month-year" class="text-xl font-bold text-gray-800 dark:text-white"></h3>
+                            <button id="next-month-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-grid text-center font-semibold text-sm text-gray-600 dark:text-gray-400 mb-2">
+                            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                        </div>
+                        <div id="calendar-days-grid" class="calendar-grid"></div>
+                    </div>
+
+                    <!-- Daily Plan Section -->
+                    <div id="daily-plan-section" class="hidden">
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Plan for <span id="selected-date-span"></span></h3>
+                        <div id="tasks-list" class="space-y-3 mb-4 max-h-96 overflow-y-auto"></div>
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">Add New Task</h4>
+                            <div class="space-y-3">
+                                <select id="subject-select" class="w-full p-2 border rounded-md bg-white dark:bg-gray-600 dark:border-gray-500"></select>
+                                <div id="subject-progress-container" class="hidden mt-2">
+                                    <div class="w-full bg-gray-200 rounded-full dark:bg-gray-600">
+                                        <div id="subject-progress-bar" class="bg-green-600 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: 0%">0%</div>
+                                    </div>
+                                </div>
+                                <select id="chapter-select" class="w-full p-2 border rounded-md bg-white dark:bg-gray-600 dark:border-gray-500"></select>
+                                <textarea id="task-description" rows="2" placeholder="Topics or pages to be covered..." class="w-full p-2 border rounded-md bg-white dark:bg-gray-600 dark:border-gray-500"></textarea>
+                                <button id="add-task-btn" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Add to Plan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const studentNameEl = document.getElementById('student-name');
+        const editNameBtn = document.getElementById('edit-name-btn');
+
+        // --- Name Logic ---
+        const loadName = () => {
+            const savedName = localStorage.getItem('caStudentName');
+            studentNameEl.textContent = savedName || 'CA Add Name';
+        };
+        
+        editNameBtn.addEventListener('click', () => {
+            const currentName = (studentNameEl.textContent.startsWith('CA ') ? studentNameEl.textContent.substring(3) : studentNameEl.textContent).replace('Add Name', '').trim();
+            const newName = prompt('Enter your name:', currentName);
+            if (newName && newName.trim() !== '') {
+                localStorage.setItem('caStudentName', 'CA ' + newName.trim());
+                loadName();
+            } else if (newName === '') { // If user enters an empty string, reset to default
+                localStorage.removeItem('caStudentName');
+                loadName();
+            }
+        });
+
+        // --- Dark Mode Toggle Logic ---
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+
+        // --- Planner Data and Logic ---
+        const monthYearEl = document.getElementById('current-month-year');
+        const daysGridEl = document.getElementById('calendar-days-grid');
+        const prevMonthBtn = document.getElementById('prev-month-btn');
+        const nextMonthBtn = document.getElementById('next-month-btn');
+        const dailyPlanSection = document.getElementById('daily-plan-section');
+        const selectedDateSpan = document.getElementById('selected-date-span');
+        const tasksList = document.getElementById('tasks-list');
+        const subjectSelect = document.getElementById('subject-select');
+        const chapterSelect = document.getElementById('chapter-select');
+        const taskDescription = document.getElementById('task-description');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const subjectProgressContainer = document.getElementById('subject-progress-container');
+        const subjectProgressBar = document.getElementById('subject-progress-bar');
+
+        let currentDate = new Date();
+        let selectedDate = null;
+        let plannerData = JSON.parse(localStorage.getItem('caPlannerData')) || {};
+        
+        // --- Complete Data from Target Sheet ---
+        const allPapersData = {
+            p1: { name: "Paper 1: Financial Reporting", chapters: [ { id: 'p1-c1', name: 'Conceptual Framework', weight: 3.125 }, { id: 'p1-c2', name: 'Ind AS 1, 34, 7 (Presentation)', weight: 3.125 }, { id: 'p1-c3', name: 'Ind AS 8, 10, 113 (Measurement)', weight: 3.125 }, { id: 'p1-c4', name: 'Schedule III', weight: 3.125 }, { id: 'p1-c5', name: 'Ind AS 115: Revenue', weight: 7 }, { id: 'p1-c6', name: 'Ind AS on Assets', weight: 7 }, { id: 'p1-c7', name: 'Ind AS 116: Leases', weight: 7 }, { id: 'p1-c8', name: 'Ind AS 19: Employee Benefits', weight: 7 }, { id: 'p1-c9', name: 'Ind AS 37: Provisions', weight: 7 }, { id: 'p1-c10', name: 'Ind AS 12, 21 (Taxes & Forex)', weight: 6.67 }, { id: 'p1-c11', name: 'Ind AS 24, 33, 108 (Disclosures)', weight: 6.67 }, { id: 'p1-c12', name: 'Ind AS 20, 102, 41 (Other)', weight: 6.67 }, { id: 'p1-c13', name: 'Financial Instruments', weight: 7.5 }, { id: 'p1-c14', name: 'Business Combinations', weight: 7.5 }, { id: 'p1-c15', name: 'Consolidation', weight: 7.5 }, { id: 'p1-c16', name: 'First-time Adoption', weight: 7.5 } ] },
+            p2: { name: "Paper 2: Advanced Financial Management", chapters: [ { id: 'p2-c1', name: 'Financial Policy & Corp. Strategy', weight: 5 }, { id: 'p2-c2', name: 'Risk Management', weight: 5 }, { id: 'p2-c3', name: 'Advanced Capital Budgeting', weight: 5 }, { id: 'p2-c4', name: 'Security Analysis', weight: 13.33 }, { id: 'p2-c5', name: 'Security Valuation', weight: 13.33 }, { id: 'p2-c6', name: 'Portfolio Management', weight: 13.34 }, { id: 'p2-c7', name: 'Securitization', weight: 6.25 }, { id: 'p2-c8', name: 'Mutual Funds', weight: 6.25 }, { id: 'p2-c9', name: 'Derivatives Analysis', weight: 6.25 }, { id: 'p2-c10', name: 'Forex Exposure', weight: 6.25 }, { id: 'p2-c11', name: 'International Financial Management', weight: 4 }, { id: 'p2-c12', name: 'Interest Rate Risk', weight: 4 }, { id: 'p2-c13', name: 'Business Valuation', weight: 4 }, { id: 'p2-c14', name: 'M&A', weight: 4 }, { id: 'p2-c15', name: 'Startup Finance', weight: 4 } ] },
+            p3: { name: "Paper 3: Advanced Auditing, Assurance and Professional Ethics", chapters: [ { id: 'p3-c1', name: 'Quality Control', weight: 10 }, { id: 'p3-c2', name: 'General Auditing Principles', weight: 10 }, { id: 'p3-c3', name: 'Audit Planning & Execution', weight: 10 }, { id: 'p3-c4', name: 'Materiality & Risk Assessment', weight: 10 }, { id: 'p3-c5', name: 'Audit Evidence', weight: 10 }, { id: 'p3-c6', name: 'Audit of Group Entities', weight: 6.25 }, { id: 'p3-c7', name: 'Specialised Areas', weight: 6.25 }, { id: 'p3-c8', name: 'Digital Auditing', weight: 6.25 }, { id: 'p3-c9', name: 'Assurance Services', weight: 6.25 }, { id: 'p3-c10', name: 'Professional Ethics', weight: 25 } ] },
+            p4: { name: "Paper 4: Direct Tax Laws & International Taxation", chapters: [ { id: 'p4-c1', name: 'Taxation of Entities', weight: 27.5 }, { id: 'p4-c2', name: 'Business Reorganisation', weight: 27.5 }, { id: 'p4-c3', name: 'Tax Administration', weight: 7.5 }, { id: 'p4-c4', name: 'Tax Planning & Evasion', weight: 7.5 }, { id: 'p4-c5', name: 'Transfer Pricing', weight: 7.5 }, { id: 'p4-c6', name: 'Non-resident Taxation & DTAA', weight: 7.5 }, { id: 'p4-c7', name: 'Model Tax Conventions & BEPS', weight: 7.5 }, { id: 'p4-c8', name: 'Digital Transactions Taxation', weight: 7.5 } ] },
+            p5: { name: "Paper 5: Indirect Tax Laws", chapters: [ { id: 'p5-c1', name: 'GST: Core Concepts', weight: 25 }, { id: 'p5-c2', name: 'GST: ITC, Procedures', weight: 25 }, { id: 'p5-c3', name: 'GST: Advanced Topics', weight: 25 }, { id: 'p5-c4', name: 'Customs Law', weight: 12.5 }, { id: 'p5-c5', name: 'Foreign Trade Policy (FTP)', weight: 12.5 } ] },
+            p6: { name: "Paper 6: Integrated Business Solutions", chapters: [ { id: 'p6-c1', name: 'Case Studies: Financial Reporting', weight: 20 }, { id: 'p6-c2', name: 'Case Studies: AFM', weight: 20 }, { id: 'p6-c3', name: 'Case Studies: Auditing', weight: 20 }, { id: 'p6-c4', name: 'Case Studies: Tax Laws', weight: 20 }, { id: 'p6-c5', name: 'Case Studies: Corp Law & SCM', weight: 20 } ] }
+        };
+
+        const renderCalendar = () => {
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
+            monthYearEl.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
+            daysGridEl.innerHTML = '';
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            for (let i = firstDayOfMonth; i > 0; i--) {
+                daysGridEl.innerHTML += `<div class="calendar-day other-month flex items-center justify-center">${daysInPrevMonth - i + 1}</div>`;
+            }
+            const today = new Date();
+            for (let i = 1; i <= daysInMonth; i++) {
+                let dayClass = 'calendar-day flex items-center justify-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full';
+                if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) dayClass += ' today';
+                if (selectedDate && i === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear()) dayClass += ' selected';
+                
+                const dateKey = new Date(year, month, i).toISOString().split('T')[0];
+                let dotHTML = '';
+                const dayTasks = plannerData[dateKey] || [];
+                if (dayTasks.length > 0) {
+                    const allComplete = dayTasks.every(task => task.completed);
+                    dotHTML = `<div class="task-dot ${allComplete ? 'dot-complete' : 'dot-pending'}"></div>`;
+                }
+
+                daysGridEl.innerHTML += `<div class="day-cell ${dayClass}" data-day="${i}">${i}${dotHTML}</div>`;
+            }
+             const totalDaysRendered = firstDayOfMonth + daysInMonth;
+            const nextDays = (7 - (totalDaysRendered % 7)) % 7;
+            for (let i = 1; i <= nextDays; i++) {
+                daysGridEl.innerHTML += `<div class="calendar-day other-month flex items-center justify-center">${i}</div>`;
+            }
+        };
+
+        const populateSubjects = () => {
+            subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
+            for (const paperId in allPapersData) {
+                const paper = allPapersData[paperId];
+                subjectSelect.innerHTML += `<option value="${paper.name}">${paper.name}</option>`;
+            }
+        };
+
+        const populateChapters = (subjectName) => {
+            chapterSelect.innerHTML = '<option value="">-- Select Chapter --</option>';
+            const paper = Object.values(allPapersData).find(p => p.name === subjectName);
+            if (paper) {
+                paper.chapters.forEach(chapter => {
+                    chapterSelect.innerHTML += `<option value="${chapter.id}" data-name="${chapter.name}">${chapter.name}</option>`;
+                });
+            }
+        };
+
+        const renderTasks = () => {
+            tasksList.innerHTML = '';
+            const dateKey = selectedDate.toISOString().split('T')[0];
+            const dayTasks = plannerData[dateKey] || [];
+
+            if (dayTasks.length === 0) {
+                tasksList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center">No tasks planned for this day.</p>';
+                return;
+            }
+
+            dayTasks.forEach((task, index) => {
+                const taskEl = document.createElement('div');
+                taskEl.className = 'task-item flex items-start justify-between bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm';
+                taskEl.innerHTML = `
+                    <div class="flex items-start">
+                        <input type="checkbox" id="task-${dateKey}-${index}" data-index="${index}" class="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" ${task.completed ? 'checked' : ''}>
+                        <label for="task-${dateKey}-${index}" class="ml-3 text-sm text-gray-900 dark:text-gray-100">
+                            <span class="font-bold">${task.chapterName}</span>
+                            <span class="block text-xs text-gray-500 dark:text-gray-400">${task.subject}</span>
+                            <span class="block mt-1 text-sm">${task.description}</span>
+                        </label>
+                    </div>
+                    <button data-index="${index}" class="delete-task-btn text-red-500 hover:text-red-700 text-lg font-bold">&times;</button>
+                `;
+                tasksList.appendChild(taskEl);
+            });
+        };
+        
+        const savePlannerData = () => {
+            localStorage.setItem('caPlannerData', JSON.stringify(plannerData));
+            renderCalendar(); // Re-render calendar to update dots
+        };
+
+        const calculateSubjectProgress = (subjectName) => {
+            const paper = Object.values(allPapersData).find(p => p.name === subjectName);
+            if (!paper) return 0;
+            let completedWeight = 0;
+            paper.chapters.forEach(chapter => {
+                if (localStorage.getItem(chapter.id) === 'Completed') {
+                    completedWeight += chapter.weight;
+                }
+            });
+            return Math.round(completedWeight);
+        };
+        
+        const calculateAndUpdateOverallProgress = () => {
+            let totalCompletedWeight = 0;
+            const totalPapers = Object.keys(allPapersData).length;
+
+            for (const paperId in allPapersData) {
+                const paperChapters = allPapersData[paperId].chapters;
+                let paperCompletedWeight = 0;
+                paperChapters.forEach(chapter => {
+                    if (localStorage.getItem(chapter.id) === 'Completed') {
+                        paperCompletedWeight += chapter.weight;
+                    }
+                });
+                totalCompletedWeight += paperCompletedWeight;
+            }
+
+            const overallPercentage = Math.round(totalCompletedWeight / totalPapers);
+            
+            const progressCircle = document.querySelector('.progress-circle');
+            const progressValue = document.querySelector('.progress-value');
+            
+            progressCircle.style.setProperty('--progress', overallPercentage);
+            progressValue.textContent = `${overallPercentage}%`;
+        };
+
+        daysGridEl.addEventListener('click', (e) => {
+            const dayCell = e.target.closest('.day-cell');
+            if (dayCell) {
+                const day = parseInt(dayCell.dataset.day);
+                selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                selectedDateSpan.textContent = selectedDate.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                dailyPlanSection.classList.remove('hidden');
+                renderCalendar();
+                renderTasks();
+            }
+        });
+
+        subjectSelect.addEventListener('change', () => {
+            const subject = subjectSelect.value;
+            populateChapters(subject);
+            if (subject) {
+                const progress = calculateSubjectProgress(subject);
+                subjectProgressBar.style.width = `${progress}%`;
+                subjectProgressBar.textContent = `${progress}%`;
+                subjectProgressContainer.classList.remove('hidden');
+            } else {
+                subjectProgressContainer.classList.add('hidden');
+            }
+        });
+
+        addTaskBtn.addEventListener('click', () => {
+            const subject = subjectSelect.value;
+            const chapterId = chapterSelect.value;
+            const chapterName = chapterSelect.options[chapterSelect.selectedIndex].dataset.name;
+            const description = taskDescription.value.trim();
+
+            if (!selectedDate || !subject || !chapterId) {
+                alert('Please select a date, subject, and chapter.');
+                return;
+            }
+
+            const dateKey = selectedDate.toISOString().split('T')[0];
+            if (!plannerData[dateKey]) plannerData[dateKey] = [];
+            
+            plannerData[dateKey].push({ subject, chapterId, chapterName, description, completed: false });
+            savePlannerData();
+            renderTasks();
+
+            const currentStatus = localStorage.getItem(chapterId);
+            if (!currentStatus || currentStatus === 'Not Started') {
+                 localStorage.setItem(chapterId, 'In Progress');
+                 window.dispatchEvent(new Event('storage')); // Notify other tabs of the change
+            }
+
+            // Reset form
+            chapterSelect.innerHTML = '<option value="">-- Select Chapter --</option>';
+            subjectSelect.value = '';
+            taskDescription.value = '';
+            subjectProgressContainer.classList.add('hidden');
+        });
+
+        tasksList.addEventListener('click', (e) => {
+            const dateKey = selectedDate.toISOString().split('T')[0];
+            if (e.target.matches('input[type="checkbox"]')) {
+                const index = e.target.dataset.index;
+                plannerData[dateKey][index].completed = e.target.checked;
+                savePlannerData();
+                renderTasks();
+            }
+            if (e.target.classList.contains('delete-task-btn')) {
+                const index = e.target.dataset.index;
+                plannerData[dateKey].splice(index, 1);
+                savePlannerData();
+                renderTasks();
+            }
+        });
+
+        prevMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
+        nextMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
+
+        // Initial Load
+        loadName();
+        populateSubjects();
+        renderCalendar();
+        calculateAndUpdateOverallProgress();
+        window.addEventListener('storage', calculateAndUpdateOverallProgress);
+    });
+    </script>
+</body>
+</html>
