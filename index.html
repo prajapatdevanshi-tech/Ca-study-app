@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CA Study Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .dark body {
+            background-color: #111827;
+        }
+        .header-gradient {
+            background: linear-gradient(-45deg, #4f46e5, #ec4899, #22d3ee, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dark .glass-card {
+             background: rgba(31, 41, 55, 0.6);
+             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .progress-circle {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(#7c3aed calc(var(--progress, 0) * 1%), #e5e7eb 0);
+            transition: background 0.5s;
+        }
+        .progress-circle::before {
+            content: "";
+            position: absolute;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
+        .dark .progress-circle::before {
+             background-color: #1f2937;
+        }
+        .progress-value {
+            position: relative;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #7c3aed;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #4f46e5, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="dark:bg-gray-900">
+
+    <!-- Main Container -->
+    <div class="w-full min-h-screen">
+
+        <!-- Header Section -->
+        <header class="header-gradient p-8 rounded-b-3xl shadow-lg">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div id="header-title-container">
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight flex items-center">
+                        <span id="student-name">CA Add Name</span>
+                        <button id="edit-name-btn" class="ml-3 text-white/80 hover:text-white text-lg"><i class="fas fa-pencil-alt"></i></button>
+                    </h1>
+                    <p class="text-lg font-semibold text-white/80">ROAD TO BECOME CA</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                     <div class="progress-circle" style="--progress: 0;" title="Overall Progress">
+                         <span class="progress-value">0%</span>
+                    </div>
+                    <button id="theme-toggle" class="text-white text-2xl">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content Area -->
+        <div class="max-w-7xl mx-auto p-4 md:p-8">
+            <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column / Main Section -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Countdown Timer Card -->
+                    <div class="glass-card rounded-2xl p-6 shadow-lg">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Countdown to Exam</h2>
+                        <div id="countdown-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                            <!-- JS will generate countdown here -->
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-white/20 dark:border-gray-700/50 flex items-center justify-center space-x-2">
+                            <input type="date" id="target-date-input" class="bg-white/50 dark:bg-gray-700/50 border-none rounded-md p-1 text-sm">
+                            <button id="set-date-btn" class="bg-indigo-500 text-white px-3 py-1 rounded-md text-sm font-semibold hover:bg-indigo-600">Set Date</button>
+                            <button id="reset-date-btn" class="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-semibold hover:bg-red-600">Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <a href="classes.html" class="group block text-center bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                            <i class="fas fa-book-open text-4xl text-blue-500 mb-4 transition-transform duration-300 group-hover:scale-110"></i>
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-white">My Classes</h3>
+                        </a>
+                        <a href="notes.html" class="group block text-center bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                            <i class="fas fa-file-alt text-4xl text-green-500 mb-4 transition-transform duration-300 group-hover:scale-110"></i>
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-white">Notes</h3>
+                        </a>
+                        <a href="docs.html" class="group block text-center bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                            <i class="fas fa-folder-open text-4xl text-purple-500 mb-4 transition-transform duration-300 group-hover:scale-110"></i>
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-white">Important Docs</h3>
+                        </a>
+                        <a href="planner.html" class="group block text-center bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                            <i class="fas fa-calendar-day text-4xl text-yellow-500 mb-4 transition-transform duration-300 group-hover:scale-110"></i>
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-white">Daily Planner</h3>
+                        </a>
+                        <a href="targets.html" class="group block text-center bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                            <i class="fas fa-bullseye text-4xl text-red-500 mb-4 transition-transform duration-300 group-hover:scale-110"></i>
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-white">Target Sheets</h3>
+                        </a>
+                        <a href="achievements.html" class="group block text-center bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                            <i class="fas fa-trophy text-4xl text-amber-500 mb-4 transition-transform duration-300 group-hover:scale-110"></i>
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-white">Achievements</h3>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Column / Sidebar -->
+                <div class="space-y-8">
+                    <!-- Quote of the Day -->
+                    <div class="glass-card rounded-2xl p-6 shadow-lg text-center">
+                         <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Quote of the Day</h2>
+                         <i class="fas fa-quote-left text-indigo-400 text-2xl mb-2"></i>
+                         <p id="quote" class="text-gray-700 dark:text-gray-300 italic"></p>
+                         <p id="quote-author" class="text-right text-gray-500 dark:text-gray-400 mt-2 font-semibold"></p>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Quick Links</h2>
+                        <ul class="space-y-3">
+                            <li><a href="https://www.icai.org/" target="_blank" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-indigo-500"><i class="fas fa-link w-6"></i>ICAI Website</a></li>
+                            <li><a href="https://boslive.icai.org/education_content_rtp.php?c=Final" target="_blank" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-indigo-500"><i class="fas fa-link w-6"></i>Revision Test Papers</a></li>
+                            <li><a href="https://www.icaionlineregistration.org/LaunchBatchDetail.aspx" target="_blank" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-indigo-500"><i class="fas fa-link w-6"></i>Adv IT & MCS batch</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const studentNameEl = document.getElementById('student-name');
+            const editNameBtn = document.getElementById('edit-name-btn');
+            const targetDateInput = document.getElementById('target-date-input');
+            const setDateBtn = document.getElementById('set-date-btn');
+            const resetDateBtn = document.getElementById('reset-date-btn');
+            const countdownContainer = document.getElementById('countdown-container');
+            let countdownInterval;
+
+            // --- Name Logic ---
+            const loadName = () => {
+                const savedName = localStorage.getItem('caStudentName');
+                studentNameEl.textContent = savedName || 'CA Add Name';
+            };
+            
+            editNameBtn.addEventListener('click', () => {
+                const currentName = (studentNameEl.textContent.startsWith('CA ') ? studentNameEl.textContent.substring(3) : studentNameEl.textContent).replace('Add Name', '').trim();
+                const newName = prompt('Enter your name:', currentName);
+                if (newName && newName.trim() !== '') {
+                    localStorage.setItem('caStudentName', 'CA ' + newName.trim());
+                    loadName();
+                } else if (newName === '') { // If user enters an empty string, reset to default
+                    localStorage.removeItem('caStudentName');
+                    loadName();
+                }
+            });
+
+            // --- Countdown Timer Logic ---
+            const startCountdown = (targetDate) => {
+                if (countdownInterval) clearInterval(countdownInterval);
+
+                const countDownDate = new Date(targetDate).getTime();
+                countdownContainer.innerHTML = `
+                    <div class="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg"><div id="days" class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">0</div><div class="text-sm font-medium text-gray-600 dark:text-gray-400">Days</div></div>
+                    <div class="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg"><div id="hours" class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">0</div><div class="text-sm font-medium text-gray-600 dark:text-gray-400">Hours</div></div>
+                    <div class="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg"><div id="minutes" class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">0</div><div class="text-sm font-medium text-gray-600 dark:text-gray-400">Minutes</div></div>
+                    <div class="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg"><div id="seconds" class="text-4xl font-bold text-red-500 animate-pulse">0</div><div class="text-sm font-medium text-gray-600 dark:text-gray-400">Seconds</div></div>
+                `;
+                const daysEl = document.getElementById('days');
+                const hoursEl = document.getElementById('hours');
+                const minutesEl = document.getElementById('minutes');
+                const secondsEl = document.getElementById('seconds');
+
+                countdownInterval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const distance = countDownDate - now;
+                    if (distance < 0) {
+                        clearInterval(countdownInterval);
+                        countdownContainer.innerHTML = '<div class="col-span-4 text-center text-3xl font-bold text-green-500">ALL THE BEST!</div>';
+                        return;
+                    }
+                    daysEl.innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    hoursEl.innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    minutesEl.innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    secondsEl.innerText = Math.floor((distance % (1000 * 60)) / 1000);
+                }, 1000);
+            };
+
+            setDateBtn.addEventListener('click', () => {
+                const newDate = targetDateInput.value;
+                if (newDate) {
+                    localStorage.setItem('caTargetDate', newDate);
+                    startCountdown(newDate + "T00:00:00");
+                } else {
+                    alert("Please select a valid date.");
+                }
+            });
+            
+            resetDateBtn.addEventListener('click', () => {
+                if(confirm("Are you sure you want to reset the timer?")) {
+                    localStorage.removeItem('caTargetDate');
+                    if (countdownInterval) clearInterval(countdownInterval);
+                    loadTargetDate();
+                }
+            });
+
+            const loadTargetDate = () => {
+                const savedDate = localStorage.getItem('caTargetDate');
+                if (savedDate) {
+                    targetDateInput.value = savedDate;
+                    startCountdown(savedDate + "T00:00:00");
+                } else {
+                    countdownContainer.innerHTML = '<div class="col-span-4 text-center text-lg text-gray-500 dark:text-gray-400 py-10">Set a target date below to start the countdown.</div>';
+                    targetDateInput.value = '';
+                }
+            };
+
+            // --- Dark Mode Toggle Logic ---
+            const themeToggle = document.getElementById('theme-toggle');
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            themeToggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+                themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+
+            // --- Quote of the Day Logic ---
+            const quoteEl = document.getElementById('quote');
+            const quoteAuthorEl = document.getElementById('quote-author');
+            const quotes = [
+                { text: "Success is the sum of small efforts, repeated day in and day out.", author: "Robert Collier" },
+                { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+                { text: "The expert in anything was once a beginner.", author: "Helen Hayes" },
+                { text: "The only place where success comes before work is in the dictionary.", author: "Vidal Sassoon" },
+                { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" }
+            ];
+            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+            const quoteIndex = dayOfYear % quotes.length;
+            quoteEl.innerText = quotes[quoteIndex].text;
+            quoteAuthorEl.innerText = `- ${quotes[quoteIndex].author}`;
+            
+            // --- Overall Progress Bar Logic ---
+            const chapterData = {
+                p1: [ { id: 'p1-c1', weight: 3.125 }, { id: 'p1-c2', weight: 3.125 }, { id: 'p1-c3', weight: 3.125 }, { id: 'p1-c4', weight: 3.125 }, { id: 'p1-c5', weight: 7 }, { id: 'p1-c6', weight: 7 }, { id: 'p1-c7', weight: 7 }, { id: 'p1-c8', weight: 7 }, { id: 'p1-c9', weight: 7 }, { id: 'p1-c10', weight: 6.67 }, { id: 'p1-c11', weight: 6.67 }, { id: 'p1-c12', weight: 6.67 }, { id: 'p1-c13', weight: 7.5 }, { id: 'p1-c14', weight: 7.5 }, { id: 'p1-c15', weight: 7.5 }, { id: 'p1-c16', weight: 7.5 } ],
+                p2: [ { id: 'p2-c1', weight: 5 }, { id: 'p2-c2', weight: 5 }, { id: 'p2-c3', weight: 5 }, { id: 'p2-c4', weight: 13.33 }, { id: 'p2-c5', weight: 13.33 }, { id: 'p2-c6', weight: 13.34 }, { id: 'p2-c7', weight: 6.25 }, { id: 'p2-c8', weight: 6.25 }, { id: 'p2-c9', weight: 6.25 }, { id: 'p2-c10', weight: 6.25 }, { id: 'p2-c11', weight: 4 }, { id: 'p2-c12', weight: 4 }, { id: 'p2-c13', weight: 4 }, { id: 'p2-c14', weight: 4 }, { id: 'p2-c15', weight: 4 } ],
+                p3: [ { id: 'p3-c1', weight: 10 }, { id: 'p3-c2', weight: 10 }, { id: 'p3-c3', weight: 10 }, { id: 'p3-c4', weight: 10 }, { id: 'p3-c5', weight: 10 }, { id: 'p3-c6', weight: 6.25 }, { id: 'p3-c7', weight: 6.25 }, { id: 'p3-c8', weight: 6.25 }, { id: 'p3-c9', weight: 6.25 }, { id: 'p3-c10', weight: 25 } ],
+                p4: [ { id: 'p4-c1', weight: 27.5 }, { id: 'p4-c2', weight: 27.5 }, { id: 'p4-c3', weight: 7.5 }, { id: 'p4-c4', weight: 7.5 }, { id: 'p4-c5', weight: 7.5 }, { id: 'p4-c6', weight: 7.5 }, { id: 'p4-c7', weight: 7.5 }, { id: 'p4-c8', weight: 7.5 } ],
+                p5: [ { id: 'p5-c1', weight: 25 }, { id: 'p5-c2', weight: 25 }, { id: 'p5-c3', weight: 25 }, { id: 'p5-c4', weight: 12.5 }, { id: 'p5-c5', weight: 12.5 } ],
+                p6: [ { id: 'p6-c1', weight: 20 }, { id: 'p6-c2', weight: 20 }, { id: 'p6-c3', weight: 20 }, { id: 'p6-c4', weight: 20 }, { id: 'p6-c5', weight: 20 } ]
+            };
+
+            const calculateAndUpdateOverallProgress = () => {
+                let totalCompletedWeight = 0;
+                const totalPapers = Object.keys(chapterData).length;
+
+                for (const paperId in chapterData) {
+                    const paperChapters = chapterData[paperId];
+                    let paperCompletedWeight = 0;
+                    paperChapters.forEach(chapter => {
+                        if (localStorage.getItem(chapter.id) === 'Completed') {
+                            paperCompletedWeight += chapter.weight;
+                        }
+                    });
+                    totalCompletedWeight += paperCompletedWeight;
+                }
+
+                const overallPercentage = Math.round(totalCompletedWeight / totalPapers);
+                
+                const progressCircle = document.querySelector('.progress-circle');
+                const progressValue = document.querySelector('.progress-value');
+                
+                progressCircle.style.setProperty('--progress', overallPercentage);
+                progressValue.textContent = `${overallPercentage}%`;
+            };
+
+            // Initial Load
+            loadName();
+            loadTargetDate();
+            calculateAndUpdateOverallProgress();
+            window.addEventListener('storage', calculateAndUpdateOverallProgress);
+        });
+    </script>
+
+</body>
+</html>
