@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
+            <button onclick="login()">Login with Google</button>
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5;
         }
@@ -346,6 +347,31 @@
 
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBVXEJLfZ-vgN7aKzR71mwpEi6h7_4UKzw",
+    authDomain: "ca-study-app-5987f.firebaseapp.com",
+    projectId: "ca-study-app-5987f",
+  };
+
+  const app = initializeApp(firebaseConfig);
+
+  const auth = getAuth();
+  const provider = new GoogleAuthProvider();
+
+  function login() {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        alert("Logged in as " + result.user.displayName);
+      });
+  }
+
+  window.login = login;
 </script>
 
 </body>
