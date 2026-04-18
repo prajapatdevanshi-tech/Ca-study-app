@@ -330,6 +330,23 @@
             window.addEventListener('storage', calculateAndUpdateOverallProgress);
         });
     </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBVXEJLfZ-vgN7aKzR71mwpEi6h7_4UKzw",
+    authDomain: "ca-study-app-5987f.firebaseapp.com",
+    projectId: "ca-study-app-5987f",
+    storageBucket: "ca-study-app-5987f.firebasestorage.app",
+    messagingSenderId: "920495527874",
+    appId: "1:920495527874:web:cd4773770ba62c7c32685b",
+    measurementId: "G-0EGEVEMSEP"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 
 </body>
 </html>
